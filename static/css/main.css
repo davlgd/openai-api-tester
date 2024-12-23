@@ -102,7 +102,7 @@ body {
 
 .method.post {
   background: var(--method-post-bg);
-  color: var(--method-post-text);
+  color: var (--method-post-text);
 }
 
 /* Configuration form */
@@ -465,18 +465,6 @@ input:focus, textarea:focus {
   word-wrap: break-word;
   word-break: break-all;
 }
-
-.response-area .err { color: #960050; background-color: #1e0010 }
-.response-area .k { color: var(--json-key) }
-.response-area .l { color: var(--json-string) }
-.response-area .n { color: var(--text-primary) }
-.response-area .o { color: var(--json-boolean) }
-.response-area .p { color: var(--text-primary) }
-.response-area .s { color: var(--json-string) }
-.response-area .na { color: var(--json-string) }
-.response-area .s2 { color: var(--json-number) }
-.response-area .mi { color: var(--json-number) }
-.response-area .kc { color: var(--json-key) }
 
 .htmx-request .response-area {
   opacity: 0.3;
