@@ -141,6 +141,7 @@ body {
   align-items: flex-start;
   background: var(--bg-secondary);
   padding: 1.5rem;
+  padding-top: 0.7rem;
   border-radius: var(--radius);
   border: 1px solid var(--border);
 }
@@ -195,7 +196,8 @@ body {
   justify-content: space-between;
 }
 
-.col h3 {
+.col,
+.col-header h3 {
   color: var(--text-secondary);
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -324,7 +326,7 @@ input:focus, textarea:focus {
   border-radius: var(--radius);
   cursor: pointer;
   font-weight: 500;
-  margin-top: 1.85rem;
+  margin-top: 3rem;
   width: 150px; /* Fixe la largeur du bouton */
 }
 
