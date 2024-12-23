@@ -1,6 +1,6 @@
 # OpenAI API Tester
 
-OpenAI API Tester is a project designed to interact with APIs compatible with OpenAI's format.
+OpenAI API Tester is a tool designed to interact with APIs compatible with OpenAI's format.
 
 ## Installation
 
