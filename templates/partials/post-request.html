@@ -1,57 +1,29 @@
-<form class="request-form" id="requestForm">
-    <div class="url-bar">
-        <div class="field">
-            <div class="col-header">
-                <h3>Request URL</h3>
-            </div>
-            <input type="text" id="display_url" class="request-url" readonly>
-            <input type="hidden" name="base_url" id="actual_url">
-            <input type="hidden" name="token" id="token_field">
+<div class="cols">
+    <div class="col">
+        <div class="col-header">
+            <h3>Request Body</h3>
         </div>
-        <button class="btn-primary" type="submit" hx-post="/api-call" hx-target="#response" hx-include="closest form"
-            hx-on="htmx:beforeRequest:
-                    this.disabled = true;
-                    this.querySelector('.btn-text').style.display = 'none';
-                    this.querySelector('.spinner').style.display = 'block';
-                htmx:afterRequest:
-                    this.disabled = false;
-                    this.querySelector('.btn-text').style.display = 'block';
-                    this.querySelector('.spinner').style.display = 'none';
-                    document.querySelector('.btn-copy').classList.add('visible');">
-            <span class="btn-text">Send</span>
-            <div class="spinner" style="display: none;"></div>
+        <div class="col-content">
+            <input type="hidden" name="method" value="POST">
+            <textarea name="body" class="json-input" spellcheck="false"
+                hx-on="blur: localStorage.setItem(document.querySelector('.endpoint-btn.active').getAttribute('data-endpoint') + '-model', this.value)"></textarea>
+        </div>
+    </div>
+<div class="col">
+    <div class="col-header">
+        <h3>Response</h3>
+        <button type="button" class="btn-copy" hx-on="click:
+            navigator.clipboard.writeText(document.getElementById('response').innerText);
+            this.querySelector('.icon').classList.remove('fa-copy');
+            this.querySelector('.icon').classList.add('fa-check');
+            setTimeout(() => {
+                this.querySelector('.icon').classList.remove('fa-check');
+                this.querySelector('.icon').classList.add('fa-copy');
+            }, 2000);" class="btn-copy">
+            <i class="icon fa fa-copy"></i>
         </button>
     </div>
-    <div class="cols">
-        <div class="col">
-            <div class="col-header">
-                <h3>Request Body</h3>
-            </div>
-            <div class="col-content">
-                <input type="hidden" name="method" value="POST">
-                <textarea name="body" class="json-input" spellcheck="false"
-                    hx-on="blur: localStorage.setItem(document.querySelector('.endpoint-btn.active').getAttribute('data-endpoint') + '-model', this.value)"></textarea>
-            </div>
-        </div>
-        <div class="col">
-            <div class="col-header">
-                <h3>Response</h3>
-                <button type="button" class="btn-copy"
-                        hx-on="click:
-                            navigator.clipboard.writeText(document.getElementById('response').innerText);
-                            this.querySelector('.icon').classList.remove('fa-copy');
-                            this.querySelector('.icon').classList.add('fa-check');
-                            setTimeout(() => {
-                                this.querySelector('.icon').classList.remove('fa-check');
-                                this.querySelector('.icon').classList.add('fa-copy');
-                            }, 2000);"
-                        class="btn-copy">
-                    <i class="icon fa fa-copy"></i>
-                </button>
-            </div>
-            <div class="col-content">
-                <div id="response" class="response-area"></div>
-            </div>
-        </div>
+    <div class="col-content">
+        <div id="response" class="response-area"></div>
     </div>
-</form>
+</div>
