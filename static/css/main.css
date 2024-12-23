@@ -196,7 +196,7 @@ body {
   justify-content: space-between;
 }
 
-.col,
+.col h3,
 .col-header h3 {
   color: var(--text-secondary);
   font-size: 0.875rem;
