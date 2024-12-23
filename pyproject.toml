@@ -1,0 +1,12 @@
+[project]
+name = "openaitester"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.6",
+    "htmx>=0.0.0",
+    "pygments>=2.18.0",
+    "uvicorn>=0.34.0",
+]

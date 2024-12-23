@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="OpenAI API Explorer">
+  <title>OpenAI API Explorer</title>
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script src="https://unpkg.com/htmx.org"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Server Configuration</h2>
+      <form id="server-config" class="config-form">
+        <div class="field">
+          <label>Host</label>
+          <input type="text" id="host" placeholder="localhost"
+                 hx-on="change: localStorage.setItem('host', this.value)">
+        </div>
+        <div class="field">
+          <label>Port (optional)</label>
+          <input type="text" id="port" placeholder="11434"
+                 hx-on="change: localStorage.setItem('port', this.value)">
+        </div>
+        <div class="field checkbox">
+          <label>
+            <input type="checkbox" id="tls"
+                   hx-on="change: localStorage.setItem('tls', this.checked)">
+            Use HTTPS
+          </label>
+        </div>
+        <div class="field">
+          <label>Bearer Token</label>
+          <input type="password" id="token" placeholder="Enter your API token if any">
+        </div>
+      </form>
+
+      <h2>Endpoints</h2>
+      <button class="endpoint-btn" hx-get="/template/get-request" hx-target="#main-form" hx-swap="innerHTML"
+              hx-on="htmx:afterSettle:
+                     this.classList.add('active');
+                     document.querySelector('#response').innerHTML = '';
+                     loadConfigFromLocalStorage();"
+              data-endpoint="/v1/models">
+        <span class="method get">GET</span>
+        <span>/v1/models</span>
+      </button>
+      <button class="endpoint-btn" hx-get="/template/post-request" hx-target="#main-form" hx-swap="innerHTML"
+              hx-on="htmx:afterSettle:
+                     this.classList.add('active');
+                     document.querySelector('#response').innerHTML = '';
+                     loadConfigFromLocalStorage();"
+              data-endpoint="/v1/chat/completions">
+        <span class="method post">POST</span>
+        <span>/v1/chat/completions</span>
+      </button>
+      <button class="endpoint-btn" hx-get="/template/post-request" hx-target="#main-form" hx-swap="innerHTML"
+              hx-on="htmx:afterSettle:
+                     this.classList.add('active');
+                     document.querySelector('#response').innerHTML = '';
+                     loadConfigFromLocalStorage();"
+              data-endpoint="/v1/embeddings">
+        <span class="method post">POST</span>
+        <span>/v1/embeddings</span>
+      </button>
+    </div>
+
+    <main class="main">
+      <div id="main-form" hx-get="/template/post-request" hx-trigger="load"></div>
+    </main>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
