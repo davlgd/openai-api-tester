@@ -1,0 +1,21 @@
+<div class="cols single">
+    <div class="col">
+        <div class="col-header">
+            <h3>Response</h3>
+            <button type="button" class="btn-copy" hx-on="click:
+                navigator.clipboard.writeText(document.getElementById('response').innerText);
+                this.querySelector('.icon').classList.remove('fa-copy');
+                this.querySelector('.icon').classList.add('fa-check');
+                setTimeout(() => {
+                    this.querySelector('.icon').classList.remove('fa-check');
+                    this.querySelector('.icon').classList.add('fa-copy');
+                }, 2000);" class="btn-copy">
+                <i class="icon fa fa-copy"></i>
+            </button>
+        </div>
+        <div class="col-content">
+            <div id="response" class="json-viewer" hx-indicator="self"></div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="method" value="GET">

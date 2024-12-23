@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>OpenAI API Tester</title>
+  <meta property="og:title" content="OpenAI API Tester">
+  <meta name="description" content="OpenAI API Explorer">
+  <meta name="keywords" content="OpenAI, API, REST, Chat, Completions, Embeddings, Explorer, AI, Artificial Intelligence">
+  <meta property="og:description" content="Explore and test OpenAI APIs with ease.">
+  <meta property="og:image" content="https://openapi.davlgd.fr/static/images/og-image.webp">
+  <meta property="og:url" content="https://openai.davlgd.fr">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OpenAI API Tester">
+  <meta name="twitter:description" content="Explore and test OpenAI APIs with ease.">
+  <meta name="twitter:image" content="https://openapi.davlgd.fr/static/images/og-image.webp">
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/fa-all.min.css">
+  <script src="https://unpkg.com/htmx.org"></script>
+  <style></style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Server Configuration</h2>
+      <form id="server-config" class="config-form">
+        <div class="field">
+          <label>Host</label>
+          <input type="text" id="host" placeholder="localhost" hx-on="change: localStorage.setItem('host', this.value)">
+        </div>
+        <div class="field">
+          <label>Port (optional)</label>
+          <input type="text" id="port" placeholder="11434" hx-on="change: localStorage.setItem('port', this.value)">
+        </div>
+        <div class="field checkbox">
+          <label>
+            <input type="checkbox" id="tls" hx-on="change: localStorage.setItem('tls', this.checked)">
+            Use HTTPS
+          </label>
+        </div>
+        <div class="field">
+          <label>Bearer Token</label>
+          <input type="password" id="token" placeholder="Enter your API token if any">
+        </div>
+      </form>
+
+      <h2>Endpoints</h2>
+      <button class="endpoint-btn" hx-get="/template/get-request" hx-target="#main-form" hx-swap="innerHTML" hx-on="htmx:afterSettle:
+        this.classList.add('active');
+        document.querySelector('#response').innerHTML = '';
+        loadConfigFromLocalStorage();" data-endpoint="/v1/models">
+        <span class="method get">GET</span>
+        <span>/v1/models</span>
+      </button>
+      <button class="endpoint-btn" hx-get="/template/post-request" hx-target="#main-form" hx-swap="innerHTML" hx-on="htmx:afterSettle:
+        this.classList.add('active');
+        document.querySelector('#response').innerHTML = '';
+        loadConfigFromLocalStorage();" data-endpoint="/v1/chat/completions">
+        <span class="method post">POST</span>
+        <span>/v1/chat/completions</span>
+      </button>
+      <button class="endpoint-btn" hx-get="/template/post-request" hx-target="#main-form" hx-swap="innerHTML" hx-on="htmx:afterSettle:
+        this.classList.add('active');
+        document.querySelector('#response').innerHTML = '';
+        loadConfigFromLocalStorage();" data-endpoint="/v1/embeddings">
+        <span class="method post">POST</span>
+        <span>/v1/embeddings</span>
+      </button>
+    </div>
+
+    <main class="main">
+      <form class="request-form" id="requestForm">
+        <div class="url-bar">
+          <div class="field">
+            <div class="col-header">
+              <h3>Request URL</h3>
+            </div>
+            <input type="text" id="display_url" class="request-url" readonly>
+            <input type="hidden" name="base_url" id="actual_url">
+            <input type="hidden" name="token" id="token_field">
+          </div>
+          <button class="btn-primary" type="submit" hx-post="/api-call" hx-target="#response" hx-include="closest form"
+            hx-on="htmx:beforeRequest:
+                this.disabled = true;
+                this.querySelector('.btn-text').style.display = 'none';
+                this.querySelector('.spinner').style.display = 'block';
+              htmx:afterRequest:
+                this.disabled = false;
+                this.querySelector('.btn-text').style.display = 'block';
+                this.querySelector('.spinner').style.display = 'none';
+                document.querySelector('.btn-copy').classList.add('visible');">
+            <span class="btn-text">Send</span>
+            <div class="spinner" style="display: none;"></div>
+          </button>
+        </div>
+        <div id="main-form" hx-get="/template/post-request" hx-trigger="load"></div>
+      </form>
+    </main>
+  </div>
+  <footer class="footer"><p>Written with ♥ by <a href="https://davlgd.fr">davlgd</a>. Use this tool with any OpenAI compatible API. It's <a href="https://github.com/davlgd/openai-api-tester" target="_blank">open source software</a>, not affiliated with OpenAI.</p></footer>
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+
+</html>

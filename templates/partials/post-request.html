@@ -1,0 +1,29 @@
+<div class="cols">
+    <div class="col">
+        <div class="col-header">
+            <h3>Request Body</h3>
+        </div>
+        <div class="col-content">
+            <input type="hidden" name="method" value="POST">
+            <textarea name="body" class="json-input" spellcheck="false"
+                hx-on="blur: localStorage.setItem(document.querySelector('.endpoint-btn.active').getAttribute('data-endpoint') + '-model', this.value)"></textarea>
+        </div>
+    </div>
+<div class="col">
+    <div class="col-header">
+        <h3>Response</h3>
+        <button type="button" class="btn-copy" hx-on="click:
+            navigator.clipboard.writeText(document.getElementById('response').innerText);
+            this.querySelector('.icon').classList.remove('fa-copy');
+            this.querySelector('.icon').classList.add('fa-check');
+            setTimeout(() => {
+                this.querySelector('.icon').classList.remove('fa-check');
+                this.querySelector('.icon').classList.add('fa-copy');
+            }, 2000);" class="btn-copy">
+            <i class="icon fa fa-copy"></i>
+        </button>
+    </div>
+    <div class="col-content">
+        <div id="response" class="response-area"></div>
+    </div>
+</div>
