@@ -1,6 +1,6 @@
-# OpenAITester
+# OpenAI API Tester
 
-OpenAITester is a project designed to interact with APIs compatible with OpenAI's API.
+OpenAI API Tester is a project designed to interact with APIs compatible with OpenAI's format.
 
 ## Installation
 
