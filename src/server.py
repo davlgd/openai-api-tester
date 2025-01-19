@@ -2,16 +2,16 @@ import json
 import httpx
 import logging
 
-from importlib import resources
 from pathlib import Path
+from importlib import resources
 
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import HtmlFormatter
 
 from fastapi import FastAPI, Request
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
 
 logging.basicConfig(level=logging.INFO)
@@ -19,17 +19,42 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(openapi_url="")
 
+def get_package_paths():
+    try:
+        package_path = resources.files("src")
+        static_test = package_path / "static"
+
+        try:
+            static_test.joinpath('test').stat()
+            return package_path
+        except (TypeError, FileNotFoundError):
+            raise ModuleNotFoundError
+    except (ModuleNotFoundError, AttributeError):
+        src_path = Path(__file__).parent
+        if not (src_path / "static").exists():
+            raise RuntimeError("Static directory not found in development mode")
+        return src_path
+
 try:
-    package_path = resources.files("src")
-except ModuleNotFoundError:
-    package_path = Path(__file__).parent
+    package_path = get_package_paths()
+    static_path = package_path / "static"
+    templates_path = package_path / "templates"
 
-static_path = package_path / "static"
-templates_path = package_path / "templates"
+    try:
+        if isinstance(static_path, Path):
+            if not static_path.exists():
+                raise RuntimeError(f"Static directory not found at {static_path}")
+        if isinstance(templates_path, Path):
+            if not templates_path.exists():
+                raise RuntimeError(f"Templates directory not found at {templates_path}")
+    except AttributeError:
+        pass  # Skip existence check for MultiplexedPath
 
-app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
-
-env = Environment(loader=FileSystemLoader(str(templates_path)))
+    app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+    env = Environment(loader=FileSystemLoader(str(templates_path)))
+except Exception as e:
+    logger.error(f"Error initializing paths: {str(e)}")
+    raise
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request) -> HTMLResponse:

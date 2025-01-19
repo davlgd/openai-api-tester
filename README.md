@@ -40,6 +40,17 @@ clever deploy
 clever open
 ```
 
+## Development
+
+To run the application locally, clone the repository use the development script:
+
+```bash
+git clone https://github.com/davlgd/openai-api-tester.git
+cd openai-api-tester
+
+uv run dev.py
+```
+
 ## License
 
 This project is licensed under the MIT License.
