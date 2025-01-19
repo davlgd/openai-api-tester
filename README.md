@@ -7,28 +7,14 @@ OpenAI API Tester is a tool designed to interact with APIs compatible with OpenA
 To install the necessary dependencies, use the `uv` package manager:
 
 ```bash
-uv sync
+uv tool install openai-api-tester
 ```
 
-## Development
-
-To run the application in development mode, use the following command:
+You can also launch the application one-shot:
 
 ```bash
-uv run uvicorn main:app --reload
+uvx  openai-api-tester
 ```
-
-## Production
-
-To run the application in production mode, use the following command:
-
-```bash
-uv run -m src.server
-```
-
-## Usage
-
-This project aims to provide a seamless interface for interacting with various APIs that are compatible with OpenAI's API.
 
 ## Deploy on Clever Cloud
 
@@ -38,16 +24,13 @@ Install Clever Tools and create a Python application:
 npm i -g clever-tools
 clever login
 
-git clone https://github.com/davlgd/openai-api-tester.git
-cd openai-api-tester
-
 clever create --type python
 ```
 
 Set the environment variables:
 
 ```bash
-clever env set CC_RUN_COMMAND "uv run -m server"
+clever env set CC_RUN_COMMAND "uvx openai-api-tester"
 ```
 
 Deploy the application:

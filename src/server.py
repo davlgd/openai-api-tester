@@ -1,7 +1,9 @@
 import json
 import httpx
-import uvicorn
 import logging
+
+from importlib import resources
+from pathlib import Path
 
 from pygments import highlight
 from pygments.lexers import JsonLexer
@@ -15,10 +17,19 @@ from jinja2 import Environment, FileSystemLoader
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app = FastAPI(openapi_url="")
 
-env = Environment(loader=FileSystemLoader("templates"))
+try:
+    package_path = resources.files("src")
+except ModuleNotFoundError:
+    package_path = Path(__file__).parent
+
+static_path = package_path / "static"
+templates_path = package_path / "templates"
+
+app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+
+env = Environment(loader=FileSystemLoader(str(templates_path)))
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request) -> HTMLResponse:
@@ -58,7 +69,8 @@ async def make_api_call(request: Request) -> HTMLResponse:
         return f"<div class='error'>{str(e)}</div>"
 
 def read_html(path: str) -> str:
-    with open(f"templates/{path}", "r") as f:
+    template_file = templates_path / path
+    with open(template_file, "r") as f:
         return f.read()
 
 def format_json_response(data: any) -> str:
@@ -76,5 +88,9 @@ def format_json_response(data: any) -> str:
         logger.error(f"Error formatting JSON response: {str(e)}")
         return f'<div class="error">{str(e)}</div>'
 
-if __name__ == "__main__":
+def main():
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=9000)
+
+if __name__ == "__main__":
+    main()
