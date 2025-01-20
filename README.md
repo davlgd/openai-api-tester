@@ -8,12 +8,21 @@ To install the necessary dependencies, use the `uv` package manager:
 
 ```bash
 uv tool install openai-api-tester
+openai-api-tester
+```
+
+or `pipx`:
+
+```bash
+pipx install openai-api-tester
+openai-api-tester
 ```
 
 You can also launch the application one-shot:
 
 ```bash
 uvx  openai-api-tester
+pipx run openai-api-tester
 ```
 
 ## Deploy on Clever Cloud
