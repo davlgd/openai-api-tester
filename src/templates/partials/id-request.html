@@ -2,15 +2,16 @@
     <div class="col">
         <div class="col-header">
             <h3>Response</h3>
-            <button type="button" class="btn-copy" aria-label="Copy response" hx-on="click:
-                navigator.clipboard.writeText(document.getElementById('response').innerText);
-                this.querySelector('.icon').classList.remove('fa-copy');
-                this.querySelector('.icon').classList.add('fa-check');
-                setTimeout(() => {
-                    this.querySelector('.icon').classList.remove('fa-check');
-                    this.querySelector('.icon').classList.add('fa-copy');
-                }, 2000);">
-                <i class="icon fa fa-copy"></i>
+            <button type="button" class="btn-copy" aria-label="Copy response">
+                <svg class="icon icon-copy" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <rect x="5.75" y="5.75" width="8.5" height="9.5" rx="1.5"/>
+                  <path d="M10.25 3.25v-1a1.5 1.5 0 0 0-1.5-1.5h-6a1.5 1.5 0 0 0-1.5 1.5v8a1.5 1.5 0 0 0 1.5 1.5h1"/>
+                </svg>
+                <svg class="icon icon-check" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 8.5 6.5 12 13 4.5"/>
+                </svg>
             </button>
         </div>
         <div class="col-content">

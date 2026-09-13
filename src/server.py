@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(openapi_url="")
 
 ALLOWED_METHODS = {"GET", "POST", "DELETE"}
+ERROR_BODY_LIMIT = 20000
 
 def get_package_paths():
     try:
@@ -62,6 +63,22 @@ except Exception as e:
     logger.error(f"Error initializing paths: {str(e)}")
     raise
 
+def format_error(message: str, detail: str = "") -> str:
+    """Render an error panel. Everything interpolated here can come from the
+    remote server, so it is escaped and shown as text, never as markup."""
+    block = f'<div class="error-title">{html.escape(message)}</div>'
+    if detail and detail.strip():
+        # Shown exactly as the server sent it: only truncated, never trimmed.
+        body = detail
+        if len(body) > ERROR_BODY_LIMIT:
+            body = body[:ERROR_BODY_LIMIT] + "\n\u2026 (truncated)"
+        # The text sits in a <code> child: a newline straight after a <pre>
+        # start tag is swallowed by the HTML parser, which would drop the
+        # response's first blank line.
+        block += f'<pre class="error-body"><code>{html.escape(body)}</code></pre>'
+    return f'<div class="error">{block}</div>'
+
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request) -> HTMLResponse:
     template = env.get_template("index.html")
@@ -83,7 +100,7 @@ async def make_api_call(request: Request) -> HTMLResponse:
 
         method = form.get("method", "POST")
         if method not in ALLOWED_METHODS:
-            return f"<div class='error'>Unsupported method: {html.escape(str(method))}</div>"
+            return format_error(f"Unsupported method: {method}")
 
         body = form.get("body")
         json_body = json.loads(body) if method == "POST" and body else None
@@ -98,14 +115,17 @@ async def make_api_call(request: Request) -> HTMLResponse:
             response.raise_for_status()
             return format_json_response(response.json())
     except httpx.HTTPStatusError as http_err:
-        logger.error(f"HTTP error occurred: {http_err.response.status_code} - {http_err.response.text}")
-        return f"<div class='error'>HTTP error occurred: {http_err.response.status_code} - {http_err.response.text}</div>"
+        status = http_err.response.status_code
+        logger.error(f"HTTP error occurred: {status} - {http_err.response.text}")
+        reason = http_err.response.reason_phrase
+        title = f"HTTP {status} {reason}".strip()
+        return format_error(title, http_err.response.text)
     except httpx.RequestError as req_err:
         logger.error(f"Request error occurred: {str(req_err)}")
-        return f"<div class='error'>Request error occurred: {str(req_err)}</div>"
+        return format_error("Request failed", str(req_err))
     except Exception as e:
         logger.error(f"Error during API call: {str(e)}")
-        return f"<div class='error'>{str(e)}</div>"
+        return format_error("Error during API call", str(e))
 
 def format_json_response(data: any) -> str:
     try:
@@ -120,7 +140,7 @@ def format_json_response(data: any) -> str:
         )
     except Exception as e:
         logger.error(f"Error formatting JSON response: {str(e)}")
-        return f'<div class="error">{str(e)}</div>'
+        return format_error("Could not format the response", str(e))
 
 def main():
     import uvicorn
