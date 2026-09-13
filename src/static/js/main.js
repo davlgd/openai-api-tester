@@ -134,6 +134,21 @@ function bindTemplateInputs() {
       if (endpoint) localStorage.setItem(`${endpoint}-model`, textarea.value);
     });
   });
+
+  const copyBtn = document.querySelector('#main-form .btn-copy');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      const responseArea = document.getElementById('response');
+      if (!responseArea) return;
+      try {
+        await navigator.clipboard.writeText(responseArea.innerText);
+      } catch {
+        return;  // clipboard denied: leave the icon alone rather than lie
+      }
+      copyBtn.classList.add('copied');
+      setTimeout(() => copyBtn.classList.remove('copied'), 2000);
+    });
+  }
 }
 
 async function loadTemplate(path, seq) {
