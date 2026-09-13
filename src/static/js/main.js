@@ -228,27 +228,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const sendBtn = document.getElementById('send_btn');
 
-  // Re-derive the parameters htmx has just serialised, then refuse the request
+  // Re-derive the fields htmx has just collected, then refuse the request
   // outright if the selection is not in a sendable state.
-  sendBtn.addEventListener('htmx:configRequest', evt => {
+  sendBtn.addEventListener('htmx:config:request', evt => {
     if (!canSend()) {
       evt.preventDefault();
       return;
     }
     updateRequestUrl();
-    evt.detail.parameters['method'] = document.getElementById('method_field').value;
-    evt.detail.parameters['base_url'] = document.getElementById('actual_url').value;
-    evt.detail.parameters['token'] = document.getElementById('token_field').value;
+    const body = evt.detail.ctx.request.body;
+    body.set('method', document.getElementById('method_field').value);
+    body.set('base_url', document.getElementById('actual_url').value);
+    body.set('token', document.getElementById('token_field').value);
   });
-  sendBtn.addEventListener('htmx:beforeRequest', evt => {
-    if (!canSend()) evt.preventDefault();
+  sendBtn.addEventListener('htmx:before:request', evt => {
+    if (!canSend()) {
+      evt.preventDefault();
+      return;
+    }
+    setSending(true);
   });
-  sendBtn.addEventListener('htmx:beforeSend', () => setSending(true));
-  sendBtn.addEventListener('htmx:afterRequest', () => {
-    setSending(false);
+  // A response arrived, so there is something worth copying. Deliberately not
+  // in finally:request, which also runs when the fetch itself failed and
+  // #response was never filled.
+  sendBtn.addEventListener('htmx:after:request', () => {
     const copyBtn = document.querySelector('.btn-copy');
     if (copyBtn) copyBtn.classList.add('visible');
   });
+  // Releasing the UI does belong in finally:request: after:request is skipped
+  // when the fetch throws, which would leave the button spinning for good.
+  sendBtn.addEventListener('htmx:finally:request', () => setSending(false));
 
   const initialBtn = document.querySelector('.endpoint-btn[data-endpoint="/v1/chat/completions"]');
   if (initialBtn) selectEndpoint(initialBtn);

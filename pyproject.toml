@@ -6,13 +6,13 @@ license = {text = "Apache-2.0"}
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "certifi>=2024.12.14",
-    "fastapi>=0.115",
+    "certifi>=2026.7.22",
+    "fastapi>=0.141",
     "httpx>=0.28.1",
-    "jinja2>=3.1",
-    "pygments>=2.19",
-    "python-multipart>=0.0.20",
-    "uvicorn>=0.34",
+    "jinja2>=3.1.6",
+    "pygments>=2.21",
+    "python-multipart>=0.0.32",
+    "uvicorn>=0.52",
 ]
 
 [project.scripts]

@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import html
 import json
 import httpx
@@ -43,6 +44,38 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
 logger.info(f"Serving requests for hosts: {', '.join(ALLOWED_HOSTS)}")
 ERROR_BODY_LIMIT = 20000
 
+class RevalidatingStaticFiles(StaticFiles):
+    """Serve static files with a mandatory revalidation.
+
+    Without Cache-Control a browser is free to reuse a cached asset for a
+    heuristic period without ever asking, which can pair a fresh page with a
+    stale script. The ETag then makes revalidation cheap: 304, not a re-download.
+    """
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
+def compute_asset_version(path) -> str:
+    """Short digest of the served JS and CSS.
+
+    Appended to the asset URLs so that an upgrade changes the URL itself:
+    a browser holding a still-fresh copy of the old one would otherwise not
+    revalidate at all, and could run the previous scripts against the new ones.
+    """
+    digest = hashlib.sha256()
+    try:
+        root = Path(str(path))
+        for asset in sorted(root.glob("**/*.js")) + sorted(root.glob("**/*.css")):
+            digest.update(asset.read_bytes())
+    except OSError as err:  # pragma: no cover - packaged layouts without a real path
+        logger.warning(f"Could not hash static assets, falling back: {err}")
+        return "dev"
+    return digest.hexdigest()[:12]
+
+
 def get_package_paths():
     try:
         package_path = resources.files("src")
@@ -74,11 +107,12 @@ try:
     except AttributeError:
         pass  # Skip existence check for MultiplexedPath
 
-    app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+    app.mount("/static", RevalidatingStaticFiles(directory=str(static_path)), name="static")
     env = Environment(
         loader=FileSystemLoader(str(templates_path)),
         autoescape=select_autoescape(["html"])
     )
+    ASSET_VERSION = compute_asset_version(static_path)
 except Exception as e:
     logger.error(f"Error initializing paths: {str(e)}")
     raise
@@ -102,7 +136,7 @@ def format_error(message: str, detail: str = "") -> str:
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request) -> HTMLResponse:
     template = env.get_template("index.html")
-    return template.render()
+    return template.render(asset_version=ASSET_VERSION)
 
 @app.get("/template/{template_name}", response_class=HTMLResponse)
 async def get_template(template_name: str) -> HTMLResponse:
