@@ -1,6 +1,6 @@
 [project]
 name = "openai-api-tester"
-version = "0.1.5"
+version = "0.2.0"
 description = "A tool designed to interact with APIs compatible with OpenAI's format."
 license = {text = "Apache-2.0"}
 readme = "README.md"
