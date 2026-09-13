@@ -1,3 +1,4 @@
+import html
 import json
 import httpx
 import logging
@@ -12,12 +13,14 @@ from pygments.formatters import HtmlFormatter
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(openapi_url="")
+
+ALLOWED_METHODS = {"GET", "POST", "DELETE"}
 
 def get_package_paths():
     try:
@@ -51,7 +54,10 @@ try:
         pass  # Skip existence check for MultiplexedPath
 
     app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
-    env = Environment(loader=FileSystemLoader(str(templates_path)))
+    env = Environment(
+        loader=FileSystemLoader(str(templates_path)),
+        autoescape=select_autoescape(["html"])
+    )
 except Exception as e:
     logger.error(f"Error initializing paths: {str(e)}")
     raise
@@ -63,7 +69,8 @@ async def home(request: Request) -> HTMLResponse:
 
 @app.get("/template/{template_name}", response_class=HTMLResponse)
 async def get_template(template_name: str) -> HTMLResponse:
-    return read_html(f"partials/{template_name}.html")
+    template = env.get_template(f"partials/{template_name}.html")
+    return template.render()
 
 @app.post("/api-call", response_class=HTMLResponse)
 async def make_api_call(request: Request) -> HTMLResponse:
@@ -74,12 +81,19 @@ async def make_api_call(request: Request) -> HTMLResponse:
         if token := form.get("token"):
             headers["Authorization"] = f"Bearer {token}"
 
+        method = form.get("method", "POST")
+        if method not in ALLOWED_METHODS:
+            return f"<div class='error'>Unsupported method: {html.escape(str(method))}</div>"
+
+        body = form.get("body")
+        json_body = json.loads(body) if method == "POST" and body else None
+
         async with httpx.AsyncClient(timeout=90.0) as client:
             response = await client.request(
-                method=form.get("method", "POST"),
+                method=method,
                 url=form.get("base_url"),
                 headers=headers,
-                json=json.loads(form.get("body")) if form.get("method") == "POST" else None
+                json=json_body
             )
             response.raise_for_status()
             return format_json_response(response.json())
@@ -92,11 +106,6 @@ async def make_api_call(request: Request) -> HTMLResponse:
     except Exception as e:
         logger.error(f"Error during API call: {str(e)}")
         return f"<div class='error'>{str(e)}</div>"
-
-def read_html(path: str) -> str:
-    template_file = templates_path / path
-    with open(template_file, "r") as f:
-        return f.read()
 
 def format_json_response(data: any) -> str:
     try:

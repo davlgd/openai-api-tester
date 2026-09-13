@@ -49,26 +49,33 @@
       </form>
 
       <h2>Endpoints</h2>
-      <button class="endpoint-btn" hx-get="/template/get-request" hx-target="#main-form" hx-swap="innerHTML" hx-on="htmx:afterSettle:
-        this.classList.add('active');
-        document.querySelector('#response').innerHTML = '';
-        loadConfigFromLocalStorage();" data-endpoint="/v1/models">
+      <button type="button" class="endpoint-btn" data-template="/template/get-request" data-method="GET" data-endpoint="/v1/models">
         <span class="method get">GET</span>
         <span>/v1/models</span>
       </button>
-      <button class="endpoint-btn" hx-get="/template/post-request" hx-target="#main-form" hx-swap="innerHTML" hx-on="htmx:afterSettle:
-        this.classList.add('active');
-        document.querySelector('#response').innerHTML = '';
-        loadConfigFromLocalStorage();" data-endpoint="/v1/chat/completions">
+      <button type="button" class="endpoint-btn" data-template="/template/post-request" data-method="POST" data-endpoint="/v1/chat/completions">
         <span class="method post">POST</span>
         <span>/v1/chat/completions</span>
       </button>
-      <button class="endpoint-btn" hx-get="/template/post-request" hx-target="#main-form" hx-swap="innerHTML" hx-on="htmx:afterSettle:
-        this.classList.add('active');
-        document.querySelector('#response').innerHTML = '';
-        loadConfigFromLocalStorage();" data-endpoint="/v1/embeddings">
+      <button type="button" class="endpoint-btn" data-template="/template/post-request" data-method="POST" data-endpoint="/v1/embeddings">
         <span class="method post">POST</span>
         <span>/v1/embeddings</span>
+      </button>
+      <button type="button" class="endpoint-btn" data-template="/template/post-request" data-method="POST" data-endpoint="/v1/responses">
+        <span class="method post">POST</span>
+        <span>/v1/responses</span>
+      </button>
+      <button type="button" class="endpoint-btn" data-template="/template/post-request" data-method="POST" data-endpoint="/v1/responses/compact">
+        <span class="method post">POST</span>
+        <span>/v1/responses/compact</span>
+      </button>
+      <button type="button" class="endpoint-btn" data-template="/template/id-request" data-method="GET" data-endpoint="/v1/responses/{response_id}">
+        <span class="method get">GET</span>
+        <span>/v1/responses/{response_id}</span>
+      </button>
+      <button type="button" class="endpoint-btn" data-template="/template/id-request" data-method="DELETE" data-endpoint="/v1/responses/{response_id}">
+        <span class="method delete">DELETE</span>
+        <span>/v1/responses/{response_id}</span>
       </button>
     </div>
 
@@ -79,25 +86,21 @@
             <div class="col-header">
               <h3>Request URL</h3>
             </div>
-            <input type="text" id="display_url" class="request-url" readonly>
+            <div class="url-inputs">
+              <input type="text" id="display_url" class="request-url" readonly>
+              <input type="text" id="response_id" class="request-url id-input" aria-label="Response ID" placeholder="response_id" style="display: none;">
+            </div>
             <input type="hidden" name="base_url" id="actual_url">
             <input type="hidden" name="token" id="token_field">
+            <input type="hidden" name="method" id="method_field">
           </div>
-          <button class="btn-primary" type="submit" hx-post="/api-call" hx-target="#response" hx-include="closest form"
-            hx-on="htmx:beforeRequest:
-                this.disabled = true;
-                this.querySelector('.btn-text').style.display = 'none';
-                this.querySelector('.spinner').style.display = 'block';
-              htmx:afterRequest:
-                this.disabled = false;
-                this.querySelector('.btn-text').style.display = 'block';
-                this.querySelector('.spinner').style.display = 'none';
-                document.querySelector('.btn-copy').classList.add('visible');">
+          <button class="btn-primary" type="submit" id="send_btn" disabled
+            hx-post="/api-call" hx-target="#response" hx-include="closest form">
             <span class="btn-text">Send</span>
             <div class="spinner" style="display: none;"></div>
           </button>
         </div>
-        <div id="main-form" hx-get="/template/post-request" hx-trigger="load"></div>
+        <div id="main-form"></div>
       </form>
     </main>
   </div>
