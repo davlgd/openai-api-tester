@@ -4,6 +4,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-13
+
 ### Added
 
 - Responses API: `POST /v1/responses`, `POST /v1/responses/compact`, `GET` and `DELETE /v1/responses/{response_id}`.
@@ -61,7 +63,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 - Initial release: `GET /v1/models`, `POST /v1/chat/completions`, `POST /v1/embeddings`.
 
-[Unreleased]: https://github.com/davlgd/openai-api-tester/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/davlgd/openai-api-tester/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/davlgd/openai-api-tester/compare/v0.1.5...v0.2.0
 [0.1.5]: https://github.com/davlgd/openai-api-tester/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/davlgd/openai-api-tester/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/davlgd/openai-api-tester/compare/v0.1.0...v0.1.3
