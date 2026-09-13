@@ -18,6 +18,8 @@
   --error-border: #662222;
   --method-post-bg: #1b5e20;
   --method-post-text: #fff;
+  --method-delete-bg: #b71c1c;
+  --method-delete-text: #fff;
   --spinner-border: rgba(255, 255, 255, 0.5);
   --spinner-border-hover: #444;
 }
@@ -59,7 +61,7 @@ input:focus, textarea:focus {
   padding: 1rem;
   max-width: 1400px;
   margin: 0 auto;
-  height: 92vh;
+  height: calc(100vh - 58px);
 }
 
 .sidebar {
@@ -67,6 +69,7 @@ input:focus, textarea:focus {
   padding: 1.5rem;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  overflow-y: auto;
 }
 
 .sidebar h2 {
@@ -75,6 +78,23 @@ input:focus, textarea:focus {
   letter-spacing: 0.05em;
   color: var(--text-secondary);
   margin-bottom: 1rem;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--spinner-border-hover);
 }
 
 .footer {
@@ -139,12 +159,17 @@ input:focus, textarea:focus {
 
 .method.post {
   background: var(--method-post-bg);
-  color: var (--method-post-text);
+  color: var(--method-post-text);
+}
+
+.method.delete {
+  background: var(--method-delete-bg);
+  color: var(--method-delete-text);
 }
 
 .config-form {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border);
 }
 
@@ -173,7 +198,7 @@ input:focus, textarea:focus {
   padding-top: 0.5rem;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  height: calc(100vh - 200px);
+  height: calc(100vh - 270px);
   min-height: 0;
   margin-top: 20px;
 }
@@ -529,4 +554,19 @@ input:focus, textarea:focus {
 .url-bar .field {
   flex: 1;
   margin: 0;
+}
+
+.url-inputs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.url-inputs .request-url {
+  flex: 1;
+}
+
+.id-input {
+  max-width: 280px;
+  cursor: text !important;
+  color: var(--text-primary) !important;
 }
